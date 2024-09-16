@@ -1,0 +1,4 @@
+io/openmessaging/benchmark/driver/BenchmarkProducer.class
+io/openmessaging/benchmark/driver/BenchmarkConsumer.class
+io/openmessaging/benchmark/driver/ConsumerCallback.class
+io/openmessaging/benchmark/driver/BenchmarkDriver.class

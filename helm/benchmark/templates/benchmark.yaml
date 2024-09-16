@@ -1,0 +1,66 @@
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+{{ $nodeCount := .Values.numWorkers | int }}   
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-driver
+  labels:
+    app: {{ .Release.Name }}
+    namespace: {{ .Release.Namespace }}
+    role: driver
+  # annotations:
+  #   "helm.sh/hook": post-install
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      component: driver
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        component: driver
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-driver
+        # imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ .Values.image }}
+        resources:
+          limits:
+            memory: {{ .Values.driverMemoryLimit }}
+            cpu: 1
+          requests:
+            memory: {{ .Values.driverMemoryRequest }}
+            cpu: 0
+        env:
+          - name: NUM_WORKERS
+            value: "{{ .Values.numWorkers }}"
+          - name: WORKERS
+            value: {{ range $index0 := until $nodeCount }}
+                      {{- $index1 := $index0 | add1 -}}
+                      http://benchmark-{{ $.Release.Namespace }}-worker-{{ $index0 }}.benchmark-{{ $.Release.Namespace }}-worker:8080{{ if ne $index1 $nodeCount }},{{- end -}}
+                   {{ end }}
+          - name: HEAP_OPTS
+            value: "-Xms700m -Xmx700m"
+        command: ["sh", "-c"]
+        args:
+          - >
+            echo $WORKERS &&
+            echo "bin/benchmark --drivers {{ .Values.driver }} --workers $WORKERS {{ .Values.workload }}" > example-run.sh &&
+            sh example-run.sh &&
+            tail -f /dev/null

@@ -1,0 +1,13 @@
+name: 10-50-topics-step1
+
+topics: 100
+partitionsPerTopic: 3
+messageSize: 1024
+keyDistributor: "NO_KEY"
+payloadFile: "payload/payload-1Kb.data"
+subscriptionsPerTopic: 1
+consumerPerSubscription: 1
+producersPerTopic: 4
+producerRate: 2500
+testDurationMinutes: 30
+warmupDurationMinutes: 5

@@ -1,0 +1,13 @@
+name: benchmark-kafka-nullkey-1GBs-4-producers-24hr-step1__AK-1000MBs
+
+topics: 10
+partitionsPerTopic: 10
+messageSize: 1024
+payloadFile: "payload/payload-1Kb.data"
+subscriptionsPerTopic: 1
+consumerPerSubscription: 1
+producersPerTopic: 4
+producerRate: 1024
+consumerBacklogSizeGB: 0
+testDurationMinutes: 360
+warmupDurationMinutes: 1
